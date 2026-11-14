@@ -1,0 +1,189 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>BEAVIS AND BUTT-HEAD CHESS</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Anton&family=Permanent+Marker&display=swap');
+:root{--acid:#baff00;--orange:#ff5a1f;--paper:#f7f4ff;--wood:#00d9ff;--cyan:#00eaff;--pink:#ff2bd6;--blue:#315bff;--green:#39ff88;--red:#ff3158}
+*{box-sizing:border-box}body{margin:0;min-height:100vh;color:var(--paper);font-family:Arial,sans-serif;background:radial-gradient(ellipse at 12% 8%,#152c78 0,transparent 34%),radial-gradient(ellipse at 90% 18%,#64144f 0,transparent 32%),radial-gradient(ellipse at 50% 100%,#075b45 0,transparent 38%),#080b1d;padding:18px}
+.wrap{max-width:1120px;margin:auto}.mast{text-align:center;margin:0 auto 18px}.mast h1{font-family:Impact,'Anton',sans-serif;font-size:clamp(2.3rem,7vw,5.6rem);line-height:.88;letter-spacing:2px;color:var(--cyan);text-shadow:0 0 8px #00eaff,0 0 22px #00aaff,4px 4px 0 #ff3158,8px 8px 0 #050403;margin:9px 0}.sub{font-family:'Permanent Marker',cursive;color:var(--pink);text-shadow:0 0 10px #ff2bd6,0 0 22px #ff2bd688;font-size:1.1rem;letter-spacing:2px}
+.layout{display:grid;grid-template-columns:minmax(280px,650px) minmax(230px,1fr);gap:20px;align-items:start}.panel{background:linear-gradient(145deg,#171c3b,#171329 55%,#102b2b);border:2px solid #00eaff;box-shadow:0 0 12px #00d9ff88,0 0 28px #315bff55,8px 8px 0 #050611;border-radius:9px;padding:14px}
+.players{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}.player{padding:8px;border:2px solid #315bff;background:linear-gradient(135deg,#101a39,#24112f);text-align:center;display:flex;align-items:center;gap:9px;min-height:95px}.player strong{font-family:Impact,sans-serif;font-size:clamp(1.2rem,3vw,1.65rem);letter-spacing:1px;display:block}.player small{color:#c8b99b}.player.active{border-color:var(--green);box-shadow:inset 0 0 0 2px #39ff8866,0 0 16px #39ff88aa}.avatar{width:76px;height:76px;flex:0 0 76px}.board{display:grid;grid-template-columns:repeat(8,1fr);border:5px solid #070a1c;box-shadow:0 0 0 2px #00eaff,0 0 20px #00d9ff88;aspect-ratio:1}.sq{border:0;position:relative;display:grid;place-items:center;aspect-ratio:1;padding:0;cursor:pointer;font-family:"Segoe UI Symbol","DejaVu Sans",serif;font-size:clamp(25px,5.7vw,55px);line-height:1}.light{background:linear-gradient(135deg,#e8faff,#9edcff)}.dark{background:linear-gradient(135deg,#2549a8,#171e5a)}.sq.selected{outline:4px solid #baff00;outline-offset:-4px;box-shadow:inset 0 0 18px #baff00aa}.sq.target:after{content:"";position:absolute;width:23%;height:23%;border-radius:50%;background:#39ff88cc}.sq.capture:after{content:"";position:absolute;inset:4px;border:4px solid #ff3158;border-radius:50%}.whitepiece{color:#fffdf2;text-shadow:1px 2px 2px #17110c,-1px -1px 1px #17110c}.blackpiece{color:#211a15;text-shadow:0 1px 0 #e7d8b7}.coord{position:absolute;font:10px Arial;color:#49321f;left:3px;top:2px;opacity:.75}
+.status{font-family:'Permanent Marker',cursive;color:var(--green);text-shadow:0 0 10px #39ff88aa;font-size:1.12rem;margin:13px 0 6px;min-height:28px}.quote{background:linear-gradient(90deg,#111a39,#241333);border-left:4px solid var(--pink);box-shadow:inset 0 0 18px #315bff33;padding:12px;font-family:'Permanent Marker',cursive;color:#f7d8a5;min-height:68px;font-size:1.05rem}.buttons{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}button.control{border:2px solid var(--cyan);background:linear-gradient(135deg,#203b91,#54205c);color:#fff;text-shadow:0 0 5px #fff;box-shadow:0 0 9px #00d9ff66;padding:9px 13px;font-weight:bold;cursor:pointer;text-transform:uppercase}button.control:hover{background:linear-gradient(135deg,#087b88,#8d176f);box-shadow:0 0 14px #ff2bd688}button:focus-visible{outline:3px solid var(--acid);outline-offset:2px}.side h2{font-family:Impact,sans-serif;color:var(--orange);text-shadow:0 0 10px #ff5a1f99,2px 2px #ff2bd6;font-size:1.8rem;letter-spacing:1px;margin:2px 0 8px}.side p{line-height:1.45;color:#d8c8aa}.moves{max-height:270px;overflow:auto;background:linear-gradient(135deg,#080d24,#17102a);border:1px solid #315bff;box-shadow:inset 0 0 14px #00d9ff22;padding:10px;font:14px monospace;color:#d9d0bd;white-space:pre-wrap}.tiny{font-size:.8rem;color:#9ecbff;margin-top:12px}
+.modebar{display:flex;gap:10px;justify-content:space-between;flex-wrap:wrap;margin:0 0 12px;padding:10px;background:linear-gradient(90deg,#131c47,#32113e);border:1px solid var(--pink);box-shadow:0 0 12px #ff2bd655}
+.modebar label{font: bold 11px Arial,sans-serif;letter-spacing:1px;color:var(--cyan);display:flex;gap:8px;align-items:center}
+.modebar select{background:#111a39;color:#fff;border:1px solid var(--cyan);padding:7px;border-radius:4px}
+.scoreboard{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:0 0 15px}
+.scoreboard div{background:linear-gradient(145deg,#101b45,#2a1241);border:1px solid var(--green);padding:9px 4px;text-align:center;box-shadow:0 0 10px #39ff8844}
+.scoreboard b{display:block;font:26px Impact,sans-serif;color:var(--green);text-shadow:0 0 8px #39ff88}
+.scoreboard small{font-size:9px;letter-spacing:1px;color:#cdeaff}
+.sq.moved{animation:moveflash .42s ease-out}
+.sq.taken{animation:hitflash .45s ease-out}
+@keyframes moveflash{0%{filter:brightness(2.5) saturate(2)}100%{filter:brightness(1)}}
+@keyframes hitflash{0%{background:#ff3158;box-shadow:inset 0 0 30px #fff}100%{filter:brightness(1)}}
+.board.shake{animation:shake .35s}
+@keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-5px)}40%{transform:translateX(5px)}60%{transform:translateX(-3px)}80%{transform:translateX(3px)}}
+body:after{content:"ROCK  •  FIRE  •  CHESS  •  ROCK  •  FIRE  •  CHESS";position:fixed;z-index:-1;bottom:18px;left:-20px;white-space:nowrap;font:clamp(25px,6vw,70px) Impact,sans-serif;letter-spacing:5px;color:#00eaff0c;transform:rotate(-8deg);pointer-events:none}
+.panel{position:relative;overflow:hidden}.panel:before{content:'';position:absolute;left:0;top:0;width:100%;height:3px;background:linear-gradient(90deg,var(--pink),var(--cyan),var(--green),var(--orange));box-shadow:0 0 12px var(--cyan)}.mast .sub:last-child{color:var(--green);text-shadow:0 0 10px #39ff88}.player:first-child strong{color:#ff6b3d;text-shadow:0 0 9px #ff3158}.player:last-child strong{color:#69eaff;text-shadow:0 0 9px #00d9ff}.win{display:none;position:fixed;inset:0;background:#030617eF;backdrop-filter:blur(7px);z-index:5;align-items:center;justify-content:center;padding:20px}.win.show{display:flex}.winbox{background:linear-gradient(145deg,#151d49,#32133d);border:4px solid var(--cyan);box-shadow:0 0 22px #00eaff,0 0 55px #ff2bd688;padding:28px;text-align:center;max-width:480px;width:100%;border-radius:12px}.winbox h2{font:clamp(2rem,8vw,4rem) Impact,sans-serif;color:var(--green);margin:0 0 12px;text-shadow:0 0 14px #39ff88,3px 3px #783915}.winbox p{font:1.2rem 'Permanent Marker',cursive;color:#ffb36c}.winbox button{margin-top:10px}
+@media(max-width:760px){body{padding:10px}.layout{grid-template-columns:1fr}.panel{padding:10px}.avatar{width:60px;height:60px;flex-basis:60px}.player{min-height:78px}.side{display:block}.moves{max-height:150px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header class="mast"><div class="sub">HEH HEH HEH... LET'S PLAY!</div><h1>BEAVIS AND<br>BUTT-HEAD CHESS</h1><div class="sub">THE GAME OF KINGS. PLAYED BY IDIOTS.</div></header>
+<div class="layout">
+<section class="panel">
+ <div class="players">
+  <div class="player active" id="whitePlayer">
+   <svg class="avatar" viewBox="0 0 100 100" role="img" aria-label="Cartoon-Porträt Beavis"><path d="M24 35 Q12 5 35 18 Q39 -2 53 17 Q72 -2 72 28 L78 43Z" fill="#d9c34a" stroke="#17110d" stroke-width="4"/><path d="M24 37 Q18 63 31 82 Q49 99 68 80 Q82 60 74 36 Q54 22 24 37" fill="#f1b47e" stroke="#17110d" stroke-width="4"/><path d="M29 53 Q38 45 46 53 M56 52 Q65 45 72 52" fill="none" stroke="#17110d" stroke-width="5" stroke-linecap="round"/><path d="M42 70 Q52 61 65 71 Q55 86 42 70" fill="#6e251b" stroke="#17110d" stroke-width="3"/><path d="M30 37 Q47 26 74 39" fill="none" stroke="#d9c34a" stroke-width="7"/></svg>
+   <div><strong>BEAVIS 🔥</strong><small>White pieces</small></div>
+  </div>
+  <div class="player" id="blackPlayer">
+   <svg class="avatar" viewBox="0 0 100 100" role="img" aria-label="Cartoon-Porträt Butt-Head"><path d="M19 31 Q23 5 52 14 Q79 13 81 39 L75 47 L24 46Z" fill="#a95b31" stroke="#17110d" stroke-width="4"/><path d="M24 39 Q16 65 31 83 Q50 99 70 82 Q83 61 75 38 Q48 24 24 39" fill="#e9ae78" stroke="#17110d" stroke-width="4"/><path d="M27 55 Q36 48 45 55 M56 55 Q66 48 74 56" fill="none" stroke="#17110d" stroke-width="5" stroke-linecap="round"/><path d="M43 73 Q53 68 64 74" fill="none" stroke="#17110d" stroke-width="4" stroke-linecap="round"/><path d="M22 33 Q48 25 78 39" fill="none" stroke="#a95b31" stroke-width="8"/></svg>
+   <div><strong>BUTT-HEAD</strong><small>Black pieces</small></div>
+  </div>
+ </div>
+ <div class="modebar">
+  <label>SPIELMODUS <select id="mode"><option value="local">2 Spieler</option><option value="computer" selected>Gegen Butt-Head (Computer)</option></select></label>
+  <label>LEVEL <select id="level"><option value="1">Easy</option><option value="2" selected>Normal</option><option value="3">Hard</option></select></label>
+ </div>
+ <div id="board" class="board" aria-label="Schachbrett"></div>
+ <div class="status" id="status">Schach wird geladen...</div>
+ <div class="quote" id="quote">„Äh ... wie zieht nochmal ein Pferd?“</div>
+ <div class="buttons"><button class="control" id="undo">↶ Undo</button><button class="control" id="reset">Neues Spiel</button><button class="control" id="flip">Brett drehen</button><button class="control" id="sound">🔊 Sound: an</button></div>
+</section>
+<aside class="panel side">
+ <h2>WIE MAN SPIELT, DUMMKOPF</h2>
+ <p>Beavis spielt Weiß. Butt-Head spielt Schwarz. Tippe eine Figur an und dann ein markiertes Feld. Es gelten die normalen Schachregeln – inklusive Rochade, en passant, Schach und Bauernumwandlung.</p>
+ <h2>ARCADE-HIGHSCORE</h2><div class="scoreboard"><div><b id="wins">0</b><small>SIEGE</small></div><div><b id="losses">0</b><small>NIEDERLAGEN</small></div><div><b id="draws">0</b><small>REMIS</small></div></div>
+ <h2>ZUGVERLAUF</h2><div class="moves" id="moves">Noch kein Zug. Macht endlich was.</div>
+ <p class="tiny">Spiele lokal zu zweit oder gegen Stockfish 19. Für den Computergegner ist eine Internetverbindung zum Laden der Engine nötig. Bestwerte bleiben auf diesem Gerät gespeichert.</p>
+</aside>
+</div>
+</div>
+<div class="win" id="win"><div class="winbox"><h2 id="winTitle">CHECKMATE!</h2><p id="winText">Heh heh heh!</p><button class="control" id="winReset">NOCH EINE RUNDE!</button></div></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
+<script>
+(()=> {
+ const boardEl=document.getElementById('board'),statusEl=document.getElementById('status'),quoteEl=document.getElementById('quote'),movesEl=document.getElementById('moves');
+ if(typeof Chess==='undefined'){statusEl.textContent='Schach-Regeln konnten nicht geladen werden.';quoteEl.textContent='Bitte Internetverbindung prüfen und neu laden.';return;}
+ const game=new Chess();let selected=null,flipped=false,soundOn=true,audio=null,thinking=false,lastMove=null,recorded=false;
+ const glyph={wk:'♔',wq:'♕',wr:'♖',wb:'♗',wn:'♘',wp:'♙',bk:'♚',bq:'♛',br:'♜',bb:'♝',bn:'♞',bp:'♟'};
+ const quips=['Heh heh. Du hast ein Pferd bewegt.','Feuer! Feuer! Feuer!','Äh ... das war bestimmt ein guter Zug.','Du bist so schlecht. Nein, DU bist schlecht.','Fast so gut wie Nachos.','Whoa! Schach! Das heißt ... äh ... Schach.','Heh heh heh. Der König ist am Arsch.','Gewinnen wir schon?','Ich bin der Schachmeister. Nein, ich!','Das war total Absicht.','Cool. Ein Zug. Und jetzt Nachos.'];
+ const $=id=>document.getElementById(id);
+ function playTone(freq=180,duration=.13,type='square'){if(!soundOn)return;try{audio=audio||new(window.AudioContext||window.webkitAudioContext)();const o=audio.createOscillator(),g=audio.createGain();o.type=type;o.frequency.value=freq;g.gain.setValueAtTime(.055,audio.currentTime);g.gain.exponentialRampToValueAtTime(.001,audio.currentTime+duration);o.connect(g);g.connect(audio.destination);o.start();o.stop(audio.currentTime+duration)}catch(e){}}
+ function fanfare(){[440,554,659,880].forEach((n,i)=>setTimeout(()=>playTone(n,.22,'triangle'),i*115))}
+ function say(text){quoteEl.textContent='„'+text+'“'}
+ function stats(){let s={w:0,l:0,d:0};try{s=JSON.parse(localStorage.getItem('bbchess-stats')||'{"w":0,"l":0,"d":0}')}catch(e){}$('wins').textContent=s.w;$('losses').textContent=s.l;$('draws').textContent=s.d;return s}
+ function saveResult(){if(recorded)return;recorded=true;const s=stats();if(game.in_draw())s.d++;else if(game.in_checkmate()){const humanWins=$('mode').value==='computer'?game.turn()==='b':false;if(humanWins)s.w++;else s.l++}try{localStorage.setItem('bbchess-stats',JSON.stringify(s))}catch(e){}stats()}
+ function isComputerTurn(){return $('mode').value==='computer'&&game.turn()==='b'&&!game.game_over()}
+ function squares(){const files=flipped?'hgfedcba':'abcdefgh',ranks=flipped?'12345678':'87654321';return [...ranks].flatMap(r=>[...files].map(f=>f+r))}
+ function endCheck(){if(!game.game_over())return;saveResult();const win=$('win');if(game.in_checkmate()){const winner=game.turn()==='w'?'BUTT-HEAD':'BEAVIS';$('winTitle').textContent='CHECKMATE!';$('winText').textContent=winner+' GEWINNT! Heh heh heh!';say(winner+' hat gewonnen. Loser!');$('board').classList.add('shake');fanfare()}else{$('winTitle').textContent='UNENTSCHIEDEN!';$('winText').textContent='Keiner hat gewonnen. Typisch.';say('Remis. Was für ein lahmes Spiel.')}win.classList.add('show')}
+ function render(){
+  boardEl.innerHTML='';const legal=selected?game.moves({square:selected,verbose:true}):[];
+  squares().forEach((sq,i)=>{const f=sq[0],r=Number(sq[1]),piece=game.get(sq),btn=document.createElement('button');btn.className='sq '+((('abcdefgh'.indexOf(f)+r)%2===0)?'light':'dark');btn.setAttribute('aria-label',sq+(piece?' '+piece.color+' '+piece.type:''));if(sq===selected)btn.classList.add('selected');const move=legal.find(m=>m.to===sq);if(move)btn.classList.add(move.captured?'capture':'target');if(lastMove&&(sq===lastMove.from||sq===lastMove.to))btn.classList.add('moved');if(piece){const span=document.createElement('span');span.className=piece.color==='w'?'whitepiece':'blackpiece';span.textContent=glyph[piece.color+piece.type];btn.appendChild(span)}
+   if(i%8===0){const c=document.createElement('span');c.className='coord';c.textContent=r;btn.appendChild(c)}if(i>=56){const c=document.createElement('span');c.className='coord';c.style.left='auto';c.style.right='3px';c.style.top='auto';c.style.bottom='2px';c.textContent=f;btn.appendChild(c)}
+   btn.addEventListener('click',()=>tap(sq));boardEl.appendChild(btn)});
+  $('whitePlayer').classList.toggle('active',game.turn()==='w'&&!game.game_over());$('blackPlayer').classList.toggle('active',game.turn()==='b'&&!game.game_over());
+  if(thinking)statusEl.textContent='BUTT-HEAD denkt nach ...';
+  else statusEl.textContent=game.in_checkmate()?'SCHACHMATT!':game.in_draw()?'REMIS.':game.in_check()?'SCHACH! '+(game.turn()==='w'?'BEAVIS':'BUTT-HEAD')+' ist dran.':(game.turn()==='w'?'BEAVIS':'BUTT-HEAD')+' ist am Zug.';
+  const hist=game.history();movesEl.textContent=hist.length?hist.reduce((a,m,i)=>a+(i%2===0?Math.floor(i/2)+1+'. ':'')+m+(i%2===0?' ':'\n'),''):'Noch kein Zug. Macht endlich was.';
+ }
+ let engine=null,engineReady=false,engineBusy=false,engineFailed=false,engineQueue=[],engineTimer=null,searchToken=0,ignoreBestMoves=0;
+ const STOCKFISH_BASE='./engine/';
+ function engineStatus(message){statusEl.textContent=message}
+ function initEngine(){
+  try{
+   // Load the official Stockfish worker directly. Its WASM companion is
+   // resolved relative to this exact versioned CDN directory.
+   engine=new Worker(STOCKFISH_BASE+'stockfish-19-lite-single.js');
+   engine.onmessage=e=>{
+    const data=e.data;
+    if(Array.isArray(data)){data.forEach(x=>onEngineMessage(String(x).trim()));}
+    else String(data||'').split(/\r?\n/).forEach(x=>onEngineMessage(x.trim()));
+   };
+   engine.onerror=()=>{
+    clearTimeout(engineTimer);engineFailed=true;engineReady=false;engineBusy=false;thinking=false;
+    engineStatus('STOCKFISH konnte nicht geladen werden – Internet/CDN prüfen.');
+    say('Butt-Heads Gehirn ist offline. Zwei-Spieler-Modus bleibt verfügbar.');
+    if($('mode').value==='computer')$('mode').value='local';
+    render();
+   };
+   engine.onmessageerror=()=>{
+    engineFailed=true;engineBusy=false;thinking=false;
+    engineStatus('Fehler beim Empfang der Engine-Antwort.');render();
+   };
+   engineTimer=setTimeout(()=>{
+    if(!engineReady&&!engineFailed){
+     engineFailed=true;engineBusy=false;thinking=false;
+     engineStatus('Stockfish antwortet nicht. Bitte neu laden oder lokal zu zweit spielen.');
+     if($('mode').value==='computer')$('mode').value='local';
+     say('Das Gehirn lädt zu lange. Prüfe deine Internetverbindung.');
+     render();
+    }
+   },25000);
+   engine.postMessage('uci');
+  }catch(e){
+   engineFailed=true;engineStatus('Stockfish ist in diesem Browser nicht verfügbar.');
+   if($('mode').value==='computer')$('mode').value='local';
+  }
+ }
+ function onEngineMessage(line){
+  if(!line)return;
+  if(line==='uciok'){
+   engine.postMessage('setoption name Hash value 64');
+   engine.postMessage('isready');
+  }else if(line==='readyok'){
+   clearTimeout(engineTimer);engineReady=true;engineFailed=false;
+   engineStatus('BUTT-HEAD AI ONLINE · STOCKFISH 19');
+   if(engineQueue.length){const fn=engineQueue.shift();fn()}
+  }else if(line.startsWith('info depth')){
+   const d=line.match(/\bdepth\s+(\d+)/),n=line.match(/\bnodes\s+(\d+)/);
+   if(d&&thinking)engineStatus('BUTT-HEAD DENKT · TIEFE '+d[1]+(n?' · '+Number(n[1]).toLocaleString('de-DE')+' POSITIONEN':''));
+  }else if(line.startsWith('bestmove')){
+   if(ignoreBestMoves>0){ignoreBestMoves--;return}
+   const uci=line.split(/\s+/)[1];
+   engineBusy=false;
+   if(uci&&uci!=='(none)'&&isComputerTurn()){
+    const from=uci.slice(0,2),to=uci.slice(2,4),promotion=uci[4]||'q';
+    const move=game.move({from,to,promotion});
+    if(move){
+     lastMove={from:move.from,to:move.to};
+     say(game.in_checkmate()?'Schachmatt! Butt-Head hat gewonnen!':game.in_check()?'Whoa! Schach! Nimm das, Beavis!':'Heh heh. Stockfish sagt: Du bist dran, Beavis.');
+     playTone(move.captured?100:190,.14);
+     if(game.in_check())$('board').classList.add('shake');
+    }
+   }
+   thinking=false;render();endCheck();
+  }
+ }
+ function computerMove(){
+  if(!isComputerTurn()||thinking||engineBusy)return;
+  if(engineFailed||!engine){$('mode').value='local';say('Stockfish ist offline. Wir schalten auf 2-Spieler-Modus um – kein Zug geht verloren.');engineStatus('2-SPIELER-MODUS · ENGINE NICHT VERFÜGBAR');render();return}
+  thinking=true;engineBusy=true;render();
+  const token=++searchToken;
+  const startSearch=()=>{
+   if(token!==searchToken||!isComputerTurn()){thinking=false;engineBusy=false;render();return}
+   const level=Number($('level').value);
+   const skill=level===1?2:level===2?10:20;
+   const ms=level===1?800:level===2?2200:5000;
+   engine.postMessage('setoption name Skill Level value '+skill);
+   engine.postMessage('position fen '+game.fen());
+   engine.postMessage('go movetime '+ms);
+  };
+  if(engineReady)startSearch();else engineQueue.push(startSearch);
+ }
+ function afterHumanMove(move){lastMove={from:move.from,to:move.to};selected=null;playTone(move.captured?95:230,.1);say(game.in_checkmate()?'Schachmatt! '+(game.turn()==='w'?'Butt-Head':'Beavis')+' gewinnt!':game.in_check()?'Whoa! Schach!':quips[Math.floor(Math.random()*quips.length)]);render();endCheck();if(!game.game_over())computerMove()}
+ function tap(sq){if(game.game_over()||thinking||isComputerTurn())return;const p=game.get(sq);if(selected){if(sq===selected){selected=null;render();return}const piece=game.get(selected);let promo='q';if(piece&&piece.type==='p'&&(sq[1]==='8'||sq[1]==='1')){const choice=prompt('Bauernumwandlung: q = Dame, r = Turm, b = Läufer, n = Springer','q');promo=String(choice||'q').toLowerCase();if(!['q','r','b','n'].includes(promo))promo='q'}const move=game.move({from:selected,to:sq,promotion:promo});if(move){afterHumanMove(move);return}}
+  if(p&&p.color===game.turn()){selected=sq;render()}else{selected=null;render()}}
+ $('undo').onclick=()=>{if(thinking){searchToken++;if(engine&&engineBusy){ignoreBestMoves++;engine.postMessage('stop')};thinking=false;engineBusy=false;engineQueue=[]}let n=game.undo();if(n&&$('mode').value==='computer'&&game.turn()==='b')n=game.undo()||n;if(n){selected=null;lastMove=null;recorded=false;$('win').classList.remove('show');render();say('Zurück damit. Das war natürlich Absicht.');playTone(150)}stats()};
+ function reset(){searchToken++;if(engine&&engineBusy){ignoreBestMoves++;engine.postMessage('stop');}engineBusy=false;engineQueue=[];game.reset();selected=null;lastMove=null;thinking=false;recorded=false;$('board').classList.remove('shake');$('win').classList.remove('show');render();say('Neues Spiel! Versuch diesmal nicht völlig zu versagen.');playTone(260)}
+ $('reset').onclick=reset;$('winReset').onclick=reset;$('flip').onclick=()=>{flipped=!flipped;render()};$('sound').onclick=e=>{soundOn=!soundOn;e.currentTarget.textContent=soundOn?'🔊 Sound: an':'🔇 Sound: aus';if(soundOn)playTone(300)};
+ $('mode').onchange=()=>{reset();if(isComputerTurn()){if(engineFailed){$('mode').value='local';say('Stockfish konnte nicht geladen werden. Du kannst lokal zu zweit spielen.')}else computerMove()}};$('level').onchange=()=>say('Schwierigkeitsgrad geändert. Hoffentlich kannst du damit umgehen.');
+ render();stats();engineStatus('STOCKFISH 19 wird geladen ...');initEngine();
+})();
+</script>
+</body>
+</html>
