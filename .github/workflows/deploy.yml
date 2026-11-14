@@ -1,0 +1,47 @@
+name: Publish BEAVIS AND BUTT-HEAD CHESS
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Prepare game and Stockfish
+        run: |
+          mkdir -p _site/engine package
+          cp index.html _site/index.html
+          cd package
+          npm pack stockfish@19.0.1
+          tar -xzf stockfish-19.0.1.tgz
+          cp package/bin/stockfish-19-lite-single.js ../_site/engine/
+          cp package/bin/stockfish-19-lite-single.wasm ../_site/engine/
+
+      - uses: actions/configure-pages@v5
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - uses: actions/deploy-pages@v4
+        id: deployment
