@@ -24,6 +24,7 @@ jobs:
         run: |
           mkdir -p _site/engine package
           cp index.html _site/index.html
+          cp beavis_butt_head_chess_online.html _site/beavis_butt_head_chess_online.html
           cd package
           npm pack stockfish@19.0.1
           tar -xzf stockfish-19.0.1.tgz
