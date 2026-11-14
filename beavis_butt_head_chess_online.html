@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>BEAVIS AND BUTT-HEAD CHESS · ONLINE DUEL</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
+<script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Anton&family=Permanent+Marker&display=swap');
+:root{--cyan:#00eaff;--pink:#ff2bd6;--green:#39ff88}
+*{box-sizing:border-box}body{margin:0;padding:14px;background:radial-gradient(ellipse at 10% 5%,#152c78,transparent 35%),radial-gradient(ellipse at 90% 20%,#64144f,transparent 32%),#080b1d;color:#f7f4ff;font-family:Arial,sans-serif}
+main{max-width:760px;margin:auto}.head{text-align:center}.head h1{font:clamp(2.2rem,8vw,4.5rem) Anton,Impact,sans-serif;line-height:.95;color:var(--cyan);text-shadow:0 0 12px var(--cyan),4px 4px #ff3158;margin:10px}.sub{font:1.1rem 'Permanent Marker',cursive;color:var(--pink)}
+.panel{background:linear-gradient(145deg,#171c3b,#171329 55%,#102b2b);border:2px solid var(--cyan);box-shadow:0 0 18px #00d9ff55;padding:13px;border-radius:9px;margin:13px 0}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}.row>*{min-width:0}
+button,input{padding:11px;border-radius:5px;font-size:1rem}button{background:linear-gradient(135deg,#203b91,#54205c);border:2px solid var(--cyan);color:white;font-weight:bold}input{background:#080d24;color:white;border:1px solid var(--cyan);flex:1}
+.status{font:1.1rem 'Permanent Marker',cursive;color:var(--green);min-height:30px;margin:10px 0}
+.board{display:grid;grid-template-columns:repeat(8,1fr);border:5px solid #00eaff;box-shadow:0 0 22px #00d9ff88;max-width:650px;margin:12px auto;aspect-ratio:1}
+.sq{position:relative;display:grid;place-items:center;aspect-ratio:1;padding:0;border:0;border-radius:0;font:clamp(26px,7vw,54px) 'Segoe UI Symbol','DejaVu Sans',serif;line-height:1}
+.light{background:linear-gradient(135deg,#e8faff,#9edcff)}.dark{background:linear-gradient(135deg,#2549a8,#171e5a)}
+.white{color:#fffdf2;text-shadow:1px 2px 2px #17110c,-1px -1px 1px #17110c}.black{color:#211a15;text-shadow:0 1px 0 #e7d8b7}
+.selected{outline:4px solid #baff00;outline-offset:-4px}.target:after{content:"";position:absolute;width:22%;height:22%;border-radius:50%;background:#39ff88bb}.capture:after{content:"";position:absolute;inset:4px;border:4px solid #ff3158;border-radius:50%}
+.hint{font-size:.88rem;color:#c9d8ff;line-height:1.4}.moves{white-space:pre-wrap;max-height:120px;overflow:auto;color:#e4d5bb;font:14px monospace}
+@media(max-width:600px){body{padding:8px}.panel{padding:10px}}
+</style></head>
+<body><main>
+<header class="head"><div class="sub">HEH HEH HEH... ONLINE DUEL!</div><h1>BEAVIS AND<br>BUTT-HEAD CHESS</h1><div class="sub">CHALLENGE A FRIEND · ANYWHERE</div></header>
+<section class="panel">
+ <div class="row"><button id="create">PARTIE ERSTELLEN · WEISS</button><input id="code" placeholder="Raumcode hier eingeben"><button id="join">BEITRETEN · SCHWARZ</button></div>
+ <div class="row" style="margin-top:8px"><button id="copy" hidden>CODE KOPIEREN</button><span id="room" class="hint">Erstelle eine Partie. Teile den angezeigten Code mit deinem Gegner.</span></div>
+ <div id="status" class="status">Noch keine Verbindung.</div>
+ <div id="board" class="board"></div>
+ <div class="row"><button id="reset">NEUES SPIEL</button><button id="flip">BRETT DREHEN</button></div>
+ <p class="hint">Du spielst Weiß, wenn du die Partie erstellst. Dein Freund spielt Schwarz. Züge werden direkt zwischen den Geräten übertragen. Beide müssen online bleiben. Für die Verbindung wird PeerJS verwendet.</p>
+ <div><b>ZUGVERLAUF</b><div id="moves" class="moves">Noch kein Zug.</div></div>
+</section>
+</main>
+<script>
+(()=> {
+ if(typeof Chess==='undefined'||typeof Peer==='undefined'){document.getElementById('status').textContent='Bibliothek konnte nicht geladen werden. Bitte Internet prüfen.';return}
+ const $=id=>document.getElementById(id),game=new Chess(),icons={wk:'♔',wq:'♕',wr:'♖',wb:'♗',wn:'♘',wp:'♙',bk:'♚',bq:'♛',br:'♜',bb:'♝',bn:'♞',bp:'♟'};
+ let peer=null,conn=null,color=null,connected=false,selected=null,flipped=false,remote=false;
+ function status(t){$('status').textContent=t}
+ function say(t){$('room').textContent=t}
+ function render(){
+  const b=$('board');b.innerHTML='';
+  const files=flipped?'hgfedcba':'abcdefgh',ranks=flipped?'12345678':'87654321';
+  const legal=selected?game.moves({square:selected,verbose:true}):[];
+  for(const r of ranks)for(const f of files){
+   const sq=f+r,p=game.get(sq),btn=document.createElement('button');
+   btn.className='sq '+((('abcdefgh'.indexOf(f)+Number(r))%2===0)?'light':'dark');
+   if(sq===selected)btn.classList.add('selected');
+   const m=legal.find(x=>x.to===sq);if(m)btn.classList.add(m.captured?'capture':'target');
+   if(p){const s=document.createElement('span');s.textContent=icons[p.color+p.type];s.className=p.color==='w'?'white':'black';btn.append(s)}
+   btn.onclick=()=>tap(sq);b.append(btn);
+  }
+  $('moves').textContent=game.history().join('  ')||'Noch kein Zug.';
+  if(game.is_checkmate())status('SCHACHMATT! '+(game.turn()==='w'?'SCHWARZ':'WEISS')+' GEWINNT!');
+  else if(game.in_draw())status('REMIS!');
+  else if(connected)status((game.turn()==='w'?'BEAVIS (WEISS)':'BUTT-HEAD (SCHWARZ)')+' ist am Zug'+(game.turn()===color?' · DU BIST DRAN':' · GEGNER AM ZUG'));
+  else status('Warte auf Verbindung ...');
+ }
+ function cleanup(){try{if(conn)conn.close();if(peer)peer.destroy()}catch(e){}conn=null;peer=null;color=null;connected=false}
+ function receive(d){
+  if(!d)return;
+  if(d.type==='sync'&&color==='b'){game.load(d.fen);render();say('Verbunden! Du bist Schwarz. Beavis beginnt.')}
+  if(d.type==='move'){
+   remote=true;const m=game.move({from:d.from,to:d.to,promotion:d.promotion||'q'});
+   if(!m&&d.fen)game.load(d.fen);remote=false;selected=null;render();
+  }
+  if(d.type==='reset'){game.reset();selected=null;render();say('Neue Runde gestartet.')}
+ }
+ function attach(c,host){
+  conn=c;
+  c.on('open',()=>{
+   connected=true;
+   if(host){color='w';c.send({type:'sync',fen:game.fen()});say('Verbunden! Du bist Weiß. Dein Freund ist Schwarz.')}
+   else{color='b';say('Verbunden! Du bist Schwarz. Warte auf den ersten Zug.')}
+   render();
+  });
+  c.on('data',receive);
+  c.on('close',()=>{connected=false;status('Gegner hat die Verbindung getrennt.');say('Verbindung beendet.')});
+  c.on('error',()=>say('Verbindungsfehler. Code prüfen und erneut versuchen.'));
+ }
+ function tap(sq){
+  if(!connected||game.game_over()||game.turn()!==color)return;
+  const p=game.get(sq);
+  if(selected){
+   const piece=game.get(selected);let promotion='q';
+   if(piece&&piece.type==='p'&&(sq[1]==='8'||sq[1]==='1')){
+    const a=prompt('Umwandlung: q=Dame, r=Turm, b=Läufer, n=Springer','q');promotion=String(a||'q').toLowerCase();if(!['q','r','b','n'].includes(promotion))promotion='q';
+   }
+   const m=game.move({from:selected,to:sq,promotion});
+   if(m){
+    selected=null;
+    if(conn&&conn.open&&!remote)conn.send({type:'move',from:m.from,to:m.to,promotion:m.promotion||'q',fen:game.fen()});
+    render();return;
+   }
+  }
+  selected=p&&p.color===color?sq:null;render();
+ }
+ $('create').onclick=()=>{
+  cleanup();game.reset();selected=null;render();status('Erstelle Raum ...');
+  peer=new Peer();
+  peer.on('open',id=>{$('code').value=id;$('copy').hidden=false;say('Dein Raumcode: '+id+' · Sende ihn deinem Freund.');status('Raum bereit. Du spielst Weiß.');});
+  peer.on('connection',c=>{if(conn){c.close();return}attach(c,true)});
+  peer.on('error',e=>{status('Verbindungsfehler: '+(e.type||'unbekannt'));});
+ };
+ $('join').onclick=()=>{
+  const id=$('code').value.trim();if(!id){say('Bitte Raumcode eingeben.');return}
+  cleanup();game.reset();selected=null;render();status('Verbinde ...');
+  peer=new Peer();
+  peer.on('open',()=>attach(peer.connect(id,{reliable:true})));
+  peer.on('error',e=>{status('Verbindung fehlgeschlagen: '+(e.type||'unbekannt'));});
+ };
+ $('copy').onclick=async()=>{try{await navigator.clipboard.writeText($('code').value);say('Code kopiert! An deinen Freund senden.')}catch(e){$('code').select();say('Code markieren und kopieren: '+$('code').value)}};
+ $('reset').onclick=()=>{if(!connected||color!=='w'){say('Nur Beavis (Weiß) kann eine neue Runde starten.');return}game.reset();selected=null;conn.send({type:'reset'});render()};
+ $('flip').onclick=()=>{flipped=!flipped;render()};
+ render();
+})();
+</script></body></html>
