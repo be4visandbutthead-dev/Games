@@ -54,7 +54,7 @@ button,input{padding:11px;border-radius:5px;font-size:1rem}button{background:lin
    btn.onclick=()=>tap(sq);b.append(btn);
   }
   $('moves').textContent=game.history().join('  ')||'Noch kein Zug.';
-  if(game.is_checkmate())status('SCHACHMATT! '+(game.turn()==='w'?'SCHWARZ':'WEISS')+' GEWINNT!');
+  if(game.in_checkmate())status('SCHACHMATT! '+(game.turn()==='w'?'SCHWARZ':'WEISS')+' GEWINNT!');
   else if(game.in_draw())status('REMIS!');
   else if(connected)status((game.turn()==='w'?'BEAVIS (WEISS)':'BUTT-HEAD (SCHWARZ)')+' ist am Zug'+(game.turn()===color?' · DU BIST DRAN':' · GEGNER AM ZUG'));
   else status('Warte auf Verbindung ...');
